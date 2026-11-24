@@ -551,6 +551,16 @@ pub struct SendArgs {
     /// Identity to send as (id or email).
     #[arg(long)]
     pub identity: Option<String>,
+
+    /// In-Reply-To Message-ID(s), with or without angle brackets. For replying to a message
+    /// that is not in this mailbox. Can be specified multiple times.
+    #[arg(long = "in-reply-to")]
+    pub in_reply_to: Vec<String>,
+
+    /// References Message-ID(s), with or without angle brackets, in thread order.
+    /// Can be specified multiple times.
+    #[arg(long)]
+    pub references: Vec<String>,
 }
 
 #[derive(Args, Debug)]

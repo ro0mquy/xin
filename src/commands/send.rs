@@ -516,8 +516,23 @@ pub async fn send(account: Option<String>, args: &SendArgs) -> Envelope<Value> {
         Err(e) => return Envelope::err("send", account, e),
     };
 
+    let strip = |v: &Vec<String>| -> Vec<String> {
+        v.iter()
+            .map(|s| {
+                s.trim()
+                    .trim_start_matches('<')
+                    .trim_end_matches('>')
+                    .trim()
+                    .to_string()
+            })
+            .filter(|s| !s.is_empty())
+            .collect()
+    };
+    let in_reply_to = strip(&args.in_reply_to);
+    let references = strip(&args.references);
+
     let email = match backend
-        .create_draft_email(
+        .create_draft_email_with_headers(
             &drafts_id,
             from_name,
             from_email,
@@ -528,6 +543,8 @@ pub async fn send(account: Option<String>, args: &SendArgs) -> Envelope<Value> {
             text.as_deref(),
             html.as_deref(),
             &uploaded,
+            None,
+            Some((&in_reply_to, &references)),
         )
         .await
     {
